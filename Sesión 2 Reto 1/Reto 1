@@ -15,13 +15,13 @@ public class SimuladorFarmacia {
         int cantidad = scanner.nextInt();
 
         // Calcular el total sin descuento
-        var totalSinDescuento = precioUnitario * cantidad;
+        double totalSinDescuento = precioUnitario * cantidad;
 
         // Calcular si aplica descuento y el monto del descuento
-        var descuento = totalSinDescuento > 500 ? totalSinDescuento * 0.15 : 0;
+        double descuento = totalSinDescuento > 500 ? totalSinDescuento * 0.15 : 0;
 
         // Calcular el total a pagar
-        var totalAPagar = totalSinDescuento - descuento;
+        double totalAPagar = totalSinDescuento - descuento;
 
         // Imprimir el resumen
         System.out.println("\nResumen de la compra:");
