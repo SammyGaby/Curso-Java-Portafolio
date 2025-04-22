@@ -1,0 +1,64 @@
+import java.util.Optional;
+import java.util.Scanner;
+
+public class Factura {
+    // 🔐 Atributos privados
+    private double monto;
+    private String descripcion;
+    private Optional<String> rfc;
+
+    // 🛠️ Constructor
+    public Factura(double monto, String descripcion, String rfc) {
+        this.monto = monto;
+        this.descripcion = descripcion;
+        this.rfc = Optional.ofNullable(rfc);
+    }
+
+    // 🛠️ Método público para obtener resumen
+    public String getResumen() {
+        String resumen = "📄 Factura generada:\n";
+        resumen += "Descripción: " + descripcion + "\n";
+        resumen += "Monto: $" + monto + "\n";
+        resumen += "RFC: " + rfc.orElse("[No proporcionado]") + "\n";
+        return resumen;
+    }
+
+    // 🚀 Método principal
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+
+        // Primera factura
+        System.out.println("Introduce los datos para la primera factura:");
+        System.out.print("Descripción: ");
+        String desc1 = scanner.nextLine();
+
+        System.out.print("Monto: ");
+        double monto1 = Double.parseDouble(scanner.nextLine());
+
+        System.out.print("RFC (puedes dejarlo vacío si no tienes): ");
+        String rfc1Input = scanner.nextLine();
+        String rfc1 = rfc1Input.isEmpty() ? null : rfc1Input;
+
+        Factura factura1 = new Factura(monto1, desc1, rfc1);
+
+        // Segunda factura
+        System.out.println("\nIntroduce los datos para la segunda factura:");
+        System.out.print("Descripción: ");
+        String desc2 = scanner.nextLine();
+
+        System.out.print("Monto: ");
+        double monto2 = Double.parseDouble(scanner.nextLine());
+
+        System.out.print("RFC (puedes dejarlo vacío si no tienes): ");
+        String rfc2Input = scanner.nextLine();
+        String rfc2 = rfc2Input.isEmpty() ? null : rfc2Input;
+
+        Factura factura2 = new Factura(monto2, desc2, rfc2);
+
+        // Mostrar resúmenes
+        System.out.println("\n" + factura1.getResumen());
+        System.out.println(factura2.getResumen());
+
+        scanner.close();
+    }
+}
