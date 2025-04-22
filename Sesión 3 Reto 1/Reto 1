@@ -1,0 +1,121 @@
+import java.util.Scanner;
+
+// Clase Pasajero
+class Pasajero {
+    private String nombre;
+    private String pasaporte;
+
+    public Pasajero(String nombre, String pasaporte) {
+        this.nombre = nombre;
+        this.pasaporte = pasaporte;
+    }
+
+    public String getNombre() {
+        return nombre;
+    }
+
+    public String getPasaporte() {
+        return pasaporte;
+    }
+}
+
+// Clase Vuelo
+class Vuelo {
+    private final String codigoVuelo;
+    private String destino;
+    private String horaSalida;
+    private Pasajero asientoReservado;
+
+    public Vuelo(String codigo, String destino, String horaSalida) {
+        this.codigoVuelo = codigo;
+        this.destino = destino;
+        this.horaSalida = horaSalida;
+        this.asientoReservado = null;
+    }
+
+    public boolean reservarAsiento(Pasajero p) {
+        if (asientoReservado == null) {
+            asientoReservado = p;
+            System.out.println("✅ Reserva realizada con éxito.");
+            return true;
+        } else {
+            System.out.println("❌ El asiento ya está reservado.");
+            return false;
+        }
+    }
+
+    public boolean reservarAsiento(String nombre, String pasaporte) {
+        return reservarAsiento(new Pasajero(nombre, pasaporte));
+    }
+
+    public void cancelarReserva() {
+        if (asientoReservado != null) {
+            System.out.println("❌ Cancelando reserva...");
+            asientoReservado = null;
+        } else {
+            System.out.println("⚠️ No hay reserva para cancelar.");
+        }
+    }
+
+    public String obtenerItinerario() {
+        String pasajeroInfo = (asientoReservado != null) ? asientoReservado.getNombre() : "[Sin reserva]";
+        return "\n✈️ Itinerario del vuelo:\n"
+             + "Código: " + codigoVuelo + "\n"
+             + "Destino: " + destino + "\n"
+             + "Salida: " + horaSalida + "\n"
+             + "Pasajero: " + pasajeroInfo + "\n";
+    }
+}
+
+// Clase Principal
+public class Principal {
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+
+        // Crear vuelo
+        System.out.print("Ingrese el código del vuelo: ");
+        String codigo = scanner.nextLine();
+
+        System.out.print("Ingrese el destino: ");
+        String destino = scanner.nextLine();
+
+        System.out.print("Ingrese la hora de salida (formato 24h): ");
+        String hora = scanner.nextLine();
+
+        Vuelo vuelo = new Vuelo(codigo, destino, hora);
+
+        // Reservar asiento
+        System.out.print("Ingrese el nombre del pasajero: ");
+        String nombre = scanner.nextLine();
+
+        System.out.print("Ingrese el pasaporte del pasajero: ");
+        String pasaporte = scanner.nextLine();
+
+        vuelo.reservarAsiento(nombre, pasaporte);
+        System.out.println(vuelo.obtenerItinerario());
+
+        // Cancelar reserva
+        System.out.print("¿Desea cancelar la reserva? (sí/no): ");
+        String respuesta = scanner.nextLine();
+        if (respuesta.equalsIgnoreCase("sí")) {
+            vuelo.cancelarReserva();
+            System.out.println(vuelo.obtenerItinerario());
+        }
+
+        // Nueva reserva
+        System.out.print("¿Desea hacer una nueva reserva? (sí/no): ");
+        String nueva = scanner.nextLine();
+        if (nueva.equalsIgnoreCase("sí")) {
+            System.out.print("Nombre del nuevo pasajero: ");
+            String nuevoNombre = scanner.nextLine();
+
+            System.out.print("Pasaporte del nuevo pasajero: ");
+            String nuevoPasaporte = scanner.nextLine();
+
+            vuelo.reservarAsiento(nuevoNombre, nuevoPasaporte);
+            System.out.println(vuelo.obtenerItinerario());
+        }
+
+        scanner.close();
+    }
+}
