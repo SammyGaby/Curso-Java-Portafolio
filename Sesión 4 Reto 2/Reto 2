@@ -1,0 +1,60 @@
+import java.util.Objects;
+
+// Record para la declaración de impuestos
+public record DeclaracionImpuestos(String rfcContribuyente, double montoDeclarado) {}
+
+// Clase tradicional para la cuenta fiscal
+class CuentaFiscal {
+    private final String rfc;
+    private double saldoDisponible;
+
+    // Constructor con validación
+    public CuentaFiscal(String rfc, double saldoDisponible) {
+        if (saldoDisponible < 0) {
+            throw new IllegalArgumentException("El saldo no puede ser negativo.");
+        }
+        this.rfc = rfc;
+        this.saldoDisponible = saldoDisponible;
+    }
+
+    // Getters
+    public String getRfc() {
+        return rfc;
+    }
+
+    public double getSaldoDisponible() {
+        return saldoDisponible;
+    }
+
+    // Método para validar RFC
+    public boolean validarRFC(DeclaracionImpuestos d) {
+        return Objects.equals(this.rfc, d.rfcContribuyente());
+    }
+}
+
+// Clase principal con el método main
+public class Main {
+    public static void main(String[] args) {
+        // Crear declaración de impuestos
+        DeclaracionImpuestos declaracion = new DeclaracionImpuestos("ABC123456XYZ", 5000.00);
+
+        // Crear cuenta fiscal
+        CuentaFiscal cuenta = new CuentaFiscal("ABC123456XYZ", 10000.00);
+
+        // Mostrar información
+        System.out.println("Declaración de Impuestos:");
+        System.out.println("RFC: " + declaracion.rfcContribuyente());
+        System.out.println("Monto declarado: $" + declaracion.montoDeclarado());
+
+        System.out.println("\nCuenta Fiscal:");
+        System.out.println("RFC: " + cuenta.getRfc());
+        System.out.println("Saldo disponible: $" + cuenta.getSaldoDisponible());
+
+        // Validar RFC
+        if (cuenta.validarRFC(declaracion)) {
+            System.out.println("\nEl RFC coincide. La declaración es válida.");
+        } else {
+            System.out.println("\nEl RFC no coincide. La declaración no es válida.");
+        }
+    }
+}
