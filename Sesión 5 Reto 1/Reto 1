@@ -1,0 +1,139 @@
+import java.util.Scanner;
+
+public class CentralEmergencias {
+
+    // Clase abstracta
+    abstract static class UnidadEmergencia {
+        protected String nombre;
+
+        public UnidadEmergencia(String nombre) {
+            this.nombre = nombre;
+        }
+
+        public void activarUnidad() {
+            System.out.println("🚨 Activando unidad: " + nombre);
+        }
+
+        public abstract void responder();
+    }
+
+    // Clases auxiliares
+    static class SistemaGPS {
+        public void localizar() {
+            System.out.println("📍 GPS: Ubicación actual detectada.");
+        }
+    }
+
+    static class Sirena {
+        public void activarSirena() {
+            System.out.println("🔊 Sirena: Activada.");
+        }
+    }
+
+    static class Operador {
+        private String nombre;
+
+        public Operador(String nombre) {
+            this.nombre = nombre;
+        }
+
+        public void reportarse() {
+            System.out.println("👷 Operador " + nombre + " reportándose.");
+        }
+    }
+
+    // Subclases
+    static class Ambulancia extends UnidadEmergencia {
+        private SistemaGPS gps = new SistemaGPS();
+        private Sirena sirena = new Sirena();
+        private Operador operador = new Operador("Juan");
+
+        public Ambulancia() {
+            super("Ambulancia");
+        }
+
+        public void iniciarOperacion() {
+            activarUnidad();
+            gps.localizar();
+            sirena.activarSirena();
+            operador.reportarse();
+            responder();
+        }
+
+        @Override
+        public void responder() {
+            System.out.println("🩺 Ambulancia en camino al hospital más cercano.");
+        }
+    }
+
+    static class Patrulla extends UnidadEmergencia {
+        private SistemaGPS gps = new SistemaGPS();
+        private Sirena sirena = new Sirena();
+        private Operador operador = new Operador("Laura");
+
+        public Patrulla() {
+            super("Patrulla");
+        }
+
+        public void iniciarOperacion() {
+            activarUnidad();
+            gps.localizar();
+            sirena.activarSirena();
+            operador.reportarse();
+            responder();
+        }
+
+        @Override
+        public void responder() {
+            System.out.println("🚓 Patrulla atendiendo situación de seguridad ciudadana.");
+        }
+    }
+
+    static class UnidadBomberos extends UnidadEmergencia {
+        private SistemaGPS gps = new SistemaGPS();
+        private Sirena sirena = new Sirena();
+        private Operador operador = new Operador("Marco");
+
+        public UnidadBomberos() {
+            super("UnidadBomberos");
+        }
+
+        public void iniciarOperacion() {
+            activarUnidad();
+            gps.localizar();
+            sirena.activarSirena();
+            operador.reportarse();
+            responder();
+        }
+
+        @Override
+        public void responder() {
+            System.out.println("🔥 Unidad de bomberos respondiendo a incendio estructural.");
+        }
+    }
+
+    // Main
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+
+        System.out.println("🚨 Bienvenido a la Central de Emergencias 🚨");
+        System.out.print("¿Qué unidad necesita? (ambulancia, patrulla, bomberos): ");
+        String tipoUnidad = scanner.nextLine().toLowerCase();
+
+        switch (tipoUnidad) {
+            case "ambulancia":
+                new Ambulancia().iniciarOperacion();
+                break;
+            case "patrulla":
+                new Patrulla().iniciarOperacion();
+                break;
+            case "bomberos":
+                new UnidadBomberos().iniciarOperacion();
+                break;
+            default:
+                System.out.println("❌ Tipo de unidad no reconocida. Intente con: ambulancia, patrulla o bomberos.");
+        }
+
+        scanner.close();
+    }
+}
