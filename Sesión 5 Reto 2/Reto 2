@@ -1,0 +1,129 @@
+import java.util.Scanner;
+
+public class SistemaDePagosInteractivo {
+
+    interface Autenticable {
+        boolean autenticar();
+    }
+
+    abstract static class MetodoPago {
+        protected double monto;
+
+        public MetodoPago(double monto) {
+            this.monto = monto;
+        }
+
+        public abstract void procesarPago();
+
+        public void mostrarResumen() {
+            System.out.println("📄 Tipo: " + this.getClass().getSimpleName() + " - Monto: $" + monto);
+        }
+    }
+
+    static class PagoEfectivo extends MetodoPago implements Autenticable {
+        public PagoEfectivo(double monto) {
+            super(monto);
+        }
+
+        @Override
+        public boolean autenticar() {
+            return true;
+        }
+
+        @Override
+        public void procesarPago() {
+            System.out.println("💵 Procesando pago en efectivo por $" + monto);
+        }
+    }
+
+    static class PagoTarjeta extends MetodoPago implements Autenticable {
+        private double fondosDisponibles;
+
+        public PagoTarjeta(double monto, double fondosDisponibles) {
+            super(monto);
+            this.fondosDisponibles = fondosDisponibles;
+        }
+
+        @Override
+        public boolean autenticar() {
+            return fondosDisponibles >= monto;
+        }
+
+        @Override
+        public void procesarPago() {
+            System.out.println("💳 Procesando pago con tarjeta por $" + monto);
+        }
+    }
+
+    static class PagoTransferencia extends MetodoPago implements Autenticable {
+        private boolean validacionBancaria;
+
+        public PagoTransferencia(double monto, boolean validacionBancaria) {
+            super(monto);
+            this.validacionBancaria = validacionBancaria;
+        }
+
+        @Override
+        public boolean autenticar() {
+            return validacionBancaria;
+        }
+
+        @Override
+        public void procesarPago() {
+            System.out.println("🏦 Procesando transferencia por $" + monto);
+        }
+    }
+
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+
+        System.out.println("💰 Bienvenido al sistema de pagos.");
+        System.out.print("Ingrese el monto a pagar: $");
+        double monto = scanner.nextDouble();
+
+        System.out.println("Seleccione el método de pago:");
+        System.out.println("1. Efectivo");
+        System.out.println("2. Tarjeta");
+        System.out.println("3. Transferencia");
+        System.out.print("Opción: ");
+        int opcion = scanner.nextInt();
+
+        MetodoPago pago = null;
+
+        switch (opcion) {
+            case 1:
+                pago = new PagoEfectivo(monto);
+                break;
+
+            case 2:
+                System.out.print("Ingrese los fondos disponibles en la tarjeta: $");
+                double fondos = scanner.nextDouble();
+                pago = new PagoTarjeta(monto, fondos);
+                break;
+
+            case 3:
+                System.out.print("¿Validación bancaria exitosa? (true/false): ");
+                boolean validacion = scanner.nextBoolean();
+                pago = new PagoTransferencia(monto, validacion);
+                break;
+
+            default:
+                System.out.println("❌ Opción inválida.");
+                System.exit(0);
+        }
+
+        // Autenticación y procesamiento
+        if (pago instanceof Autenticable) {
+            Autenticable autenticable = (Autenticable) pago;
+            if (autenticable.autenticar()) {
+                System.out.println("✅ Autenticación exitosa.");
+                pago.procesarPago();
+                pago.mostrarResumen();
+            } else {
+                System.out.println("❌ Fallo de autenticación. " + pago.getClass().getSimpleName() + " no válida.");
+            }
+        }
+
+        scanner.close();
+    }
+}
