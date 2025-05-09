@@ -1,0 +1,88 @@
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.Scanner;
+
+class Tema implements Comparable<Tema> {
+    private String titulo;
+    private int prioridad;
+
+    public Tema(String titulo, int prioridad) {
+        this.titulo = titulo;
+        this.prioridad = prioridad;
+    }
+
+    public String getTitulo() {
+        return titulo;
+    }
+
+    public int getPrioridad() {
+        return prioridad;
+    }
+
+    @Override
+    public int compareTo(Tema otro) {
+        return this.titulo.compareToIgnoreCase(otro.titulo);
+    }
+
+    @Override
+    public String toString() {
+        return "📘 " + titulo + " (Prioridad: " + prioridad + ")";
+    }
+}
+
+public class TemarioColaborativo {
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+        ArrayList<Tema> temasActivos = new ArrayList<Tema>();
+        HashMap<String, String> recursos = new HashMap<String, String>();
+
+        System.out.print("¿Cuántos temas quieres registrar?: ");
+        int cantidadTemas = scanner.nextInt();
+        scanner.nextLine(); // Limpiar salto de línea
+
+        for (int i = 1; i <= cantidadTemas; i++) {
+            System.out.println("\nTema #" + i);
+            System.out.print("Título del tema: ");
+            String titulo = scanner.nextLine();
+
+            System.out.print("Prioridad (1 = urgente, 2 = importante, 3 = opcional): ");
+            int prioridad = scanner.nextInt();
+            scanner.nextLine(); // Limpiar salto de línea
+
+            System.out.print("Enlace o descripción del recurso: ");
+            String recurso = scanner.nextLine();
+
+            temasActivos.add(new Tema(titulo, prioridad));
+            recursos.put(titulo, recurso);
+        }
+
+        // Mostrar temas ordenados por título
+        System.out.println("\n🔤 Temas ordenados por título:");
+        Collections.sort(temasActivos);
+        for (Tema t : temasActivos) {
+            System.out.println(t);
+        }
+
+        // Mostrar temas ordenados por prioridad
+        System.out.println("\n🔢 Temas ordenados por prioridad:");
+        Collections.sort(temasActivos, new Comparator<Tema>() {
+            @Override
+            public int compare(Tema t1, Tema t2) {
+                return Integer.valueOf(t1.getPrioridad()).compareTo(t2.getPrioridad());
+            }
+        });
+        for (Tema t : temasActivos) {
+            System.out.println(t);
+        }
+
+        // Mostrar repositorio
+        System.out.println("\n📚 Repositorio de recursos compartidos:");
+        for (String clave : recursos.keySet()) {
+            System.out.println("• " + clave + " → " + recursos.get(clave));
+        }
+
+        scanner.close();
+    }
+}
