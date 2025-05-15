@@ -1,0 +1,63 @@
+import java.util.HashSet;
+import java.util.Scanner;
+import java.util.Set;
+
+class ConsumoCriticoException extends Exception {
+    public ConsumoCriticoException(String mensaje) {
+        super(mensaje);
+    }
+}
+
+public class MonitorCPU {
+
+    public static void main(String[] args) {
+        Set<Double> consumosRegistrados = new HashSet<>();
+
+        try (var scanner = new Scanner(System.in)) {
+            System.out.println("Ingresa el consumo de CPU por servidor en porcentaje (ingresa 'fin' para terminar):");
+
+            while (true) {
+                System.out.print("Consumo CPU: ");
+                var entrada = scanner.nextLine();
+
+                if ("fin".equalsIgnoreCase(entrada)) {
+                    break;
+                }
+
+                double consumo;
+
+                try {
+                    consumo = Double.parseDouble(entrada);
+                } catch (NumberFormatException e) {
+                    System.out.println("[Error] Entrada no válida, debe ser un número.");
+                    continue;
+                }
+
+                if (consumo < 0 || consumo > 100) {
+                    System.out.println("[Error] El consumo debe estar entre 0 y 100.");
+                    continue;
+                }
+
+                if (consumosRegistrados.contains(consumo)) {
+                    System.out.println("[Aviso] Consumo duplicado, no será registrado.");
+                    continue;
+                }
+
+                if (consumo > 95) {
+                    throw new ConsumoCriticoException("Consumo crítico detectado: " + consumo + "%");
+                }
+
+                consumosRegistrados.add(consumo);
+                System.out.println("Consumo " + consumo + "% registrado correctamente.");
+            }
+
+            System.out.println("\nRegistro finalizado. Consumos registrados:");
+            consumosRegistrados.forEach(c -> System.out.println("- " + c + "%"));
+
+        } catch (ConsumoCriticoException e) {
+            System.out.println("[Alerta crítica] " + e.getMessage());
+        } catch (Exception e) {
+            System.out.println("[Error inesperado] " + e.getMessage());
+        }
+    }
+}
