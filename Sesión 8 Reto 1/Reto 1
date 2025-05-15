@@ -1,0 +1,75 @@
+import java.util.Scanner;
+
+// INTERFACES
+interface TransicionHistoria {
+    void avanzarEscena(String decision);
+}
+
+interface GestorDialogo {
+    void mostrarDialogo(String texto);
+}
+
+interface LogicaDecision {
+    String tomarDecision();
+}
+
+// IMPLEMENTACIONES
+class TransicionSimple implements TransicionHistoria {
+    public void avanzarEscena(String decision) {
+        if ("A".equalsIgnoreCase(decision)) {
+            System.out.println("🌅 La historia avanza hacia un camino esperanzador...");
+        } else if ("B".equalsIgnoreCase(decision)) {
+            System.out.println("🌌 La oscuridad cubre el sendero del protagonista...");
+        } else {
+            System.out.println("❓ Decisión no reconocida. El destino es incierto...");
+        }
+    }
+}
+
+class DialogoTexto implements GestorDialogo {
+    public void mostrarDialogo(String texto) {
+        System.out.println("🗣️ " + texto);
+    }
+}
+
+class DecisionBinaria implements LogicaDecision {
+    private Scanner scanner = new Scanner(System.in);
+
+    public String tomarDecision() {
+        System.out.println("¿Qué quieres hacer?");
+        System.out.println("(A) Ayudar al anciano");
+        System.out.println("(B) Ignorarlo");
+        System.out.print("Tu decisión: ");
+        return scanner.nextLine().trim();
+    }
+}
+
+// CLASE PRINCIPAL
+public class MainNarrativa {
+
+    private final TransicionHistoria transicion;
+    private final GestorDialogo dialogo;
+    private final LogicaDecision decision;
+
+    public MainNarrativa(TransicionHistoria transicion, GestorDialogo dialogo, LogicaDecision decision) {
+        this.transicion = transicion;
+        this.dialogo = dialogo;
+        this.decision = decision;
+    }
+
+    public void iniciarEscena() {
+        dialogo.mostrarDialogo("Te encuentras en una aldea en ruinas. Un anciano se acerca cojeando...");
+        String eleccion = decision.tomarDecision();
+        dialogo.mostrarDialogo("Has elegido: " + eleccion);
+        transicion.avanzarEscena(eleccion);
+    }
+
+    public static void main(String[] args) {
+        TransicionHistoria transicion = new TransicionSimple();
+        GestorDialogo dialogo = new DialogoTexto();
+        LogicaDecision decision = new DecisionBinaria();
+
+        MainNarrativa juego = new MainNarrativa(transicion, dialogo, decision);
+        juego.iniciarEscena();
+    }
+}
