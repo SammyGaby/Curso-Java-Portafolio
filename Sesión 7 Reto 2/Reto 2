@@ -1,0 +1,54 @@
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
+
+public class AnalizadorDeLogs {
+
+    public static void main(String[] args) {
+        String rutaArchivo = "errores.log";             // archivo de entrada
+        String archivoRegistroFallos = "registro_fallos.txt"; // archivo de errores
+
+        int totalLineas = 0;
+        int totalErrores = 0;
+        int totalWarnings = 0;
+
+        try (BufferedReader lector = new BufferedReader(new FileReader(rutaArchivo))) {
+            String linea;
+
+            while ((linea = lector.readLine()) != null) {
+                totalLineas++;
+
+                if (linea.contains("ERROR")) {
+                    totalErrores++;
+                }
+
+                if (linea.contains("WARNING")) {
+                    totalWarnings++;
+                }
+            }
+
+            // Mostrar resultados
+            System.out.println("📊 RESUMEN DEL ANÁLISIS:");
+            System.out.println("Total de líneas leídas: " + totalLineas);
+            System.out.println("Cantidad de errores (ERROR): " + totalErrores);
+            System.out.println("Cantidad de advertencias (WARNING): " + totalWarnings);
+
+            if (totalLineas > 0) {
+                double porcentajeProblemas = ((double) (totalErrores + totalWarnings) / totalLineas) * 100;
+                System.out.printf("Porcentaje de líneas con errores/advertencias: %.2f%%\n", porcentajeProblemas);
+            }
+
+        } catch (IOException e) {
+            // Si hay error, escribirlo en un archivo de registro
+            try (BufferedWriter writer = new BufferedWriter(new FileWriter(archivoRegistroFallos, true))) {
+                writer.write("⚠️ Error al procesar el archivo: " + e.getMessage());
+                writer.newLine();
+                System.out.println("❌ Ocurrió un error. El mensaje se guardó en " + archivoRegistroFallos);
+            } catch (IOException ex) {
+                System.out.println("❌ No se pudo escribir en el archivo de registro: " + ex.getMessage());
+            }
+        }
+    }
+}
