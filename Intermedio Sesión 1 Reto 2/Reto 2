@@ -1,0 +1,148 @@
+import java.util.*;
+import java.util.function.Predicate;
+
+abstract class MaterialCurso {
+    protected String titulo;
+    protected String autor;
+
+    public MaterialCurso(String titulo, String autor) {
+        this.titulo = titulo;
+        this.autor = autor;
+    }
+
+    public abstract void mostrarDetalle();
+
+    public String getAutor() {
+        return autor;
+    }
+}
+
+// 🎥 Clase Video
+class Video extends MaterialCurso {
+    private int duracion; // en minutos
+
+    public Video(String titulo, String autor, int duracion) {
+        super(titulo, autor);
+        this.duracion = duracion;
+    }
+
+    public int getDuracion() {
+        return duracion;
+    }
+
+    @Override
+    public void mostrarDetalle() {
+        System.out.println("🎥 Video: " + titulo + " - Autor: " + autor + " - Duración: " + duracion + " min");
+    }
+}
+
+// 📄 Clase Artículo
+class Articulo extends MaterialCurso {
+    private int palabras;
+
+    public Articulo(String titulo, String autor, int palabras) {
+        super(titulo, autor);
+        this.palabras = palabras;
+    }
+
+    @Override
+    public void mostrarDetalle() {
+        System.out.println("📄 Artículo: " + titulo + " - Autor: " + autor + " - Palabras: " + palabras);
+    }
+}
+
+// 📝 Clase Ejercicio
+class Ejercicio extends MaterialCurso {
+    private boolean revisado;
+
+    public Ejercicio(String titulo, String autor, boolean revisado) {
+        super(titulo, autor);
+        this.revisado = revisado;
+    }
+
+    public void marcarRevisado() {
+        this.revisado = true;
+    }
+
+    public boolean estaRevisado() {
+        return revisado;
+    }
+
+    @Override
+    public void mostrarDetalle() {
+        System.out.println("📝 Ejercicio: " + titulo + " - Autor: " + autor + " - Revisado: " + revisado);
+    }
+
+    public String getTitulo() {
+        return titulo;
+    }
+}
+
+// 👨‍🏫 Clase principal
+public class PlataformaEducativa {
+
+    // Mostrar todos los materiales
+    public static void mostrarMateriales(List<? extends MaterialCurso> lista) {
+        for (MaterialCurso material : lista) {
+            material.mostrarDetalle();
+        }
+    }
+
+    // Contar duración total de los videos
+    public static void contarDuracionVideos(List<? extends Video> lista) {
+        int total = 0;
+        for (Video v : lista) {
+            total += v.getDuracion();
+        }
+        System.out.println("\n🎥 Duración total de videos: " + total + " minutos");
+    }
+
+    // Marcar ejercicios como revisados
+    public static void marcarEjerciciosRevisados(List<? super Ejercicio> lista) {
+        System.out.println();
+        for (Object obj : lista) {
+            if (obj instanceof Ejercicio) {
+                Ejercicio e = (Ejercicio) obj;
+                e.marcarRevisado();
+                System.out.println("✅ Ejercicio '" + e.getTitulo() + "' marcado como revisado.");
+            }
+        }
+    }
+
+    // Desafío adicional: Filtrar por autor
+    public static void filtrarPorAutor(List<? extends MaterialCurso> lista, Predicate<MaterialCurso> criterio) {
+        System.out.println("\n🔍 Filtrando materiales por autor:");
+        for (MaterialCurso material : lista) {
+            if (criterio.test(material)) {
+                material.mostrarDetalle();
+            }
+        }
+    }
+
+    // Método main
+    public static void main(String[] args) {
+        // Crear materiales
+        Video v1 = new Video("Introducción a Java", "Mario", 15);
+        Video v2 = new Video("POO en Java", "Carlos", 20);
+        Articulo a1 = new Articulo("Historia de Java", "Ana", 1200);
+        Articulo a2 = new Articulo("Tipos de datos", "Luis", 800);
+        Ejercicio e1 = new Ejercicio("Variables y tipos", "Luis", false);
+        Ejercicio e2 = new Ejercicio("Condicionales", "Mario", false);
+
+        // Agregar a una lista de MaterialCurso
+        List<MaterialCurso> materiales = Arrays.asList(v1, v2, a1, a2, e1, e2);
+
+        // Mostrar todos
+        System.out.println("📚 Materiales del curso:");
+        mostrarMateriales(materiales);
+
+        // Contar duración de videos
+        contarDuracionVideos(Arrays.asList(v1, v2));
+
+        // Marcar ejercicios como revisados
+        marcarEjerciciosRevisados(materiales);
+
+        // Filtrar por autor (Mario)
+        filtrarPorAutor(materiales, m -> m.getAutor().equalsIgnoreCase("Mario"));
+    }
+}
