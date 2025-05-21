@@ -1,0 +1,133 @@
+import java.util.*;
+
+// Clase abstracta
+abstract class OrdenProduccion {
+    protected String codigo;
+    protected int cantidad;
+
+    public OrdenProduccion(String codigo, int cantidad) {
+        this.codigo = codigo;
+        this.cantidad = cantidad;
+    }
+
+    public abstract void mostrarResumen();
+}
+
+// Subclase: Producción en masa
+class OrdenMasa extends OrdenProduccion {
+    public OrdenMasa(String codigo, int cantidad) {
+        super(codigo, cantidad);
+    }
+
+    @Override
+    public void mostrarResumen() {
+        System.out.println("🔧 OrdenMasa - Código: " + codigo + " - Cantidad: " + cantidad);
+    }
+}
+
+// Subclase: Orden personalizada
+class OrdenPersonalizada extends OrdenProduccion {
+    private String cliente;
+
+    public OrdenPersonalizada(String codigo, int cantidad, String cliente) {
+        super(codigo, cantidad);
+        this.cliente = cliente;
+    }
+
+    @Override
+    public void mostrarResumen() {
+        System.out.println("🛠️ OrdenPersonalizada - Código: " + codigo + " - Cantidad: " + cantidad + " - Cliente: " + cliente);
+    }
+
+    public void aplicarCostoAdicional(int costo) {
+        System.out.println("✅ Orden " + codigo + " ajustada con costo adicional de $" + costo);
+    }
+}
+
+// Subclase: Prototipo
+class OrdenPrototipo extends OrdenProduccion {
+    private String faseDesarrollo;
+
+    public OrdenPrototipo(String codigo, int cantidad, String faseDesarrollo) {
+        super(codigo, cantidad);
+        this.faseDesarrollo = faseDesarrollo;
+    }
+
+    @Override
+    public void mostrarResumen() {
+        System.out.println("🧪 OrdenPrototipo - Código: " + codigo + " - Cantidad: " + cantidad + " - Fase: " + faseDesarrollo);
+    }
+}
+
+// Clase principal
+public class PlantaIndustrial {
+    // Método genérico para mostrar cualquier tipo de orden
+    public static void mostrarOrdenes(List<? extends OrdenProduccion> lista) {
+        for (OrdenProduccion orden : lista) {
+            orden.mostrarResumen();
+        }
+    }
+
+    // Método para procesar solo órdenes personalizadas
+    public static void procesarPersonalizadas(List<? super OrdenPersonalizada> lista, int costoAdicional) {
+        System.out.println("\n💰 Procesando órdenes personalizadas...");
+        for (Object obj : lista) {
+            if (obj instanceof OrdenPersonalizada) {
+                ((OrdenPersonalizada) obj).aplicarCostoAdicional(costoAdicional);
+            }
+        }
+    }
+
+    // Método adicional: contar tipos de órdenes
+    public static void contarOrdenes(List<OrdenProduccion> todas) {
+        int masa = 0, personalizada = 0, prototipo = 0;
+        for (OrdenProduccion orden : todas) {
+            if (orden instanceof OrdenMasa) masa++;
+            else if (orden instanceof OrdenPersonalizada) personalizada++;
+            else if (orden instanceof OrdenPrototipo) prototipo++;
+        }
+
+        System.out.println("\n📊 Resumen total de órdenes:");
+        System.out.println("🔧 Producción en masa: " + masa);
+        System.out.println("🛠️ Personalizadas: " + personalizada);
+        System.out.println("🧪 Prototipos: " + prototipo);
+    }
+
+    public static void main(String[] args) {
+        // Crear órdenes
+        OrdenMasa o1 = new OrdenMasa("A123", 500);
+        OrdenMasa o2 = new OrdenMasa("A124", 750);
+
+        OrdenPersonalizada p1 = new OrdenPersonalizada("P456", 100, "ClienteX");
+        OrdenPersonalizada p2 = new OrdenPersonalizada("P789", 150, "ClienteY");
+
+        OrdenPrototipo t1 = new OrdenPrototipo("T789", 10, "Diseño");
+        OrdenPrototipo t2 = new OrdenPrototipo("T790", 5, "Pruebas");
+
+        // Listas por tipo
+        List<OrdenMasa> listaMasa = Arrays.asList(o1, o2);
+        List<OrdenPersonalizada> listaPersonalizadas = Arrays.asList(p1, p2);
+        List<OrdenPrototipo> listaPrototipos = Arrays.asList(t1, t2);
+
+        // Mostrar órdenes
+        System.out.println("📋 Órdenes registradas:");
+        mostrarOrdenes(listaMasa);
+
+        System.out.println("\n📋 Órdenes registradas:");
+        mostrarOrdenes(listaPersonalizadas);
+
+        System.out.println("\n📋 Órdenes registradas:");
+        mostrarOrdenes(listaPrototipos);
+
+        // Procesar personalizadas
+        List<OrdenProduccion> todas = new ArrayList<>();
+        todas.addAll(listaMasa);
+        todas.addAll(listaPersonalizadas);
+        todas.addAll(listaPrototipos);
+
+        procesarPersonalizadas(todas, 200);
+
+        // Contar totales
+        contarOrdenes(todas);
+    }
+}
