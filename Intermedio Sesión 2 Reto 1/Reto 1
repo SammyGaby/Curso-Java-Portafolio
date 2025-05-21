@@ -1,0 +1,56 @@
+import java.util.concurrent.*;
+
+class SistemaNavegacion implements Callable<String> {
+    @Override
+    public String call() throws Exception {
+        Thread.sleep(1200);
+        return "🛰️ Navegación: trayectoria corregida con éxito.";
+    }
+}
+
+class SistemaSoporteVital implements Callable<String> {
+    @Override
+    public String call() throws Exception {
+        Thread.sleep(900);
+        return "🧪 Soporte vital: presión y oxígeno dentro de parámetros normales.";
+    }
+}
+
+class SistemaControlTermico implements Callable<String> {
+    @Override
+    public String call() throws Exception {
+        Thread.sleep(1000);
+        return "🔥 Control térmico: temperatura estable (22°C).";
+    }
+}
+
+class SistemaComunicaciones implements Callable<String> {
+    @Override
+    public String call() throws Exception {
+        Thread.sleep(700);
+        return "📡 Comunicaciones: enlace con estación terrestre establecido.";
+    }
+}
+
+public class SimulacionMisionEspacial {
+    public static void main(String[] args) throws Exception {
+        System.out.println("🚀 Simulación de misión espacial iniciada...\n");
+
+        ExecutorService executor = Executors.newFixedThreadPool(4);
+
+        Future<String> futuroNavegacion = executor.submit(new SistemaNavegacion());
+        Future<String> futuroSoporteVital = executor.submit(new SistemaSoporteVital());
+        Future<String> futuroControlTermico = executor.submit(new SistemaControlTermico());
+        Future<String> futuroComunicaciones = executor.submit(new SistemaComunicaciones());
+
+        // Mostrar resultados (el orden puede variar)
+        System.out.println(futuroComunicaciones.get());
+        System.out.println(futuroSoporteVital.get());
+        System.out.println(futuroControlTermico.get());
+        System.out.println(futuroNavegacion.get());
+
+        executor.shutdown();
+
+        System.out.println("\n✅ Todos los sistemas reportan estado operativo.");
+    }
+}
