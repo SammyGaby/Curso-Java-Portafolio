@@ -1,0 +1,52 @@
+import java.util.concurrent.*;
+import java.util.concurrent.locks.ReentrantLock;
+
+public class SimulacionHospital {
+
+    public static void main(String[] args) {
+        System.out.println("🏥 Iniciando acceso a la Sala de cirugía...");
+
+        RecursoMedico salaCirugia = new RecursoMedico("Sala de cirugía");
+
+        // Crear un pool de hilos
+        ExecutorService executor = Executors.newFixedThreadPool(4);
+
+        // Crear tareas (profesionales médicos)
+        Runnable draSanchez = () -> salaCirugia.usar("👩‍⚕️ Dra. Sánchez");
+        Runnable drGomez = () -> salaCirugia.usar("👨‍⚕️ Dr. Gómez");
+        Runnable enfermeraLopez = () -> salaCirugia.usar("👩‍⚕️ Enfermera López");
+        Runnable drRamirez = () -> salaCirugia.usar("👨‍⚕️ Dr. Ramírez");
+
+        // Ejecutar las tareas
+        executor.execute(draSanchez);
+        executor.execute(drGomez);
+        executor.execute(enfermeraLopez);
+        executor.execute(drRamirez);
+
+        // Cerrar el executor
+        executor.shutdown();
+    }
+}
+
+// Clase que representa un recurso médico compartido
+class RecursoMedico {
+    private String nombre;
+    private ReentrantLock lock = new ReentrantLock();
+
+    public RecursoMedico(String nombre) {
+        this.nombre = nombre;
+    }
+
+    public void usar(String profesional) {
+        lock.lock();
+        try {
+            System.out.println(profesional + " ha ingresado a " + nombre);
+            Thread.sleep(1500); // Simula tiempo de uso del recurso
+            System.out.println("✅ " + profesional + " ha salido de " + nombre);
+        } catch (InterruptedException e) {
+            System.out.println("⚠️ " + profesional + " fue interrumpido.");
+        } finally {
+            lock.unlock(); // Muy importante liberar el recurso
+        }
+    }
+}
