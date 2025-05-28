@@ -1,0 +1,59 @@
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ThreadLocalRandom;
+
+public class MovilidadApp {
+
+    // Simula calcular la ruta óptima con latencia de 2-3 segundos
+    public CompletableFuture<String> calcularRuta() {
+        return CompletableFuture.supplyAsync(() -> {
+            System.out.println("🚦 Calculando ruta...");
+            try {
+                // Simula latencia entre 2 y 3 segundos
+                Thread.sleep(ThreadLocalRandom.current().nextInt(2000, 3001));
+                // Simula excepción aleatoria (10% probabilidad)
+                if (Math.random() < 0.1) {
+                    throw new RuntimeException("Error al calcular ruta");
+                }
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+            return "Centro -> Norte";
+        });
+    }
+
+    // Simula estimar tarifa con latencia de 1-2 segundos
+    public CompletableFuture<Double> estimarTarifa() {
+        return CompletableFuture.supplyAsync(() -> {
+            System.out.println("💰 Estimando tarifa...");
+            try {
+                // Simula latencia entre 1 y 2 segundos
+                Thread.sleep(ThreadLocalRandom.current().nextInt(1000, 2001));
+                // Simula excepción aleatoria (10% probabilidad)
+                if (Math.random() < 0.1) {
+                    throw new RuntimeException("Error al estimar tarifa");
+                }
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+            return 75.50;
+        });
+    }
+
+    // Método para combinar ambas operaciones y mostrar el resultado final
+    public void confirmarViaje() {
+        calcularRuta().thenCombine(estimarTarifa(), (ruta, tarifa) -> {
+            return String.format("✅ 🚗 Ruta calculada: %s | Tarifa estimada: $%.2f", ruta, tarifa);
+        }).exceptionally(ex -> {
+            return "❌ Error en el proceso: " + ex.getMessage();
+        }).thenAccept(System.out::println);
+    }
+
+    // Main para probar
+    public static void main(String[] args) throws InterruptedException {
+        MovilidadApp app = new MovilidadApp();
+        app.confirmarViaje();
+
+        // Para que el programa no termine antes de que completen los futuros
+        Thread.sleep(5000);
+    }
+}
