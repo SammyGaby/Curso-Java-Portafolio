@@ -1,0 +1,87 @@
+package com.ejemplo.inventario;
+
+import jakarta.persistence.*;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotBlank;
+import org.springframework.boot.CommandLineRunner;
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.context.annotation.Bean;
+import org.springframework.data.jpa.repository.JpaRepository;
+
+import java.util.List;
+
+@SpringBootApplication
+public class InventarioApplication {
+
+    public static void main(String[] args) {
+        SpringApplication.run(InventarioApplication.class, args);
+    }
+
+    // ENTIDAD Producto
+    @Entity
+    public static class Producto {
+        @Id
+        @GeneratedValue(strategy = GenerationType.IDENTITY)
+        private Long id;
+
+        @NotBlank(message = "El nombre no puede estar en blanco")
+        private String nombre;
+
+        @NotBlank(message = "La descripción no puede estar en blanco")
+        private String descripcion;
+
+        @Min(value = 1, message = "El precio debe ser mayor o igual a 1")
+        private double precio;
+
+        // Constructor vacío requerido por JPA
+        public Producto() {}
+
+        // Constructor con parámetros
+        public Producto(String nombre, String descripcion, double precio) {
+            this.nombre = nombre;
+            this.descripcion = descripcion;
+            this.precio = precio;
+        }
+
+        // Getters y setters (puedes generarlos automáticamente en tu IDE)
+
+        @Override
+        public String toString() {
+            return "Producto[id=" + id + ", nombre='" + nombre + "', precio=" + precio + "]";
+        }
+    }
+
+    // REPOSITORIO
+    public interface ProductoRepository extends JpaRepository<Producto, Long> {
+        List<Producto> findByPrecioGreaterThan(double precio);
+        List<Producto> findByNombreContainingIgnoreCase(String nombre);
+        List<Producto> findByPrecioBetween(double min, double max);
+        List<Producto> findByNombreStartingWithIgnoreCase(String prefijo);
+    }
+
+    // PROGRAMA DE PRUEBA EN CONSOLA
+    @Bean
+    public CommandLineRunner demo(ProductoRepository repo) {
+        return args -> {
+            // Guardar productos
+            repo.save(new Producto("Laptop Lenovo", "Portátil potente", 12500));
+            repo.save(new Producto("Mouse Logitech", "Ergonómico y preciso", 350));
+            repo.save(new Producto("Teclado Mecánico", "RGB switches azules", 950));
+            repo.save(new Producto("Monitor", "Pantalla 24 pulgadas", 3200));
+
+            // Consultas
+            System.out.println("📦 Productos con precio mayor a 500:");
+            repo.findByPrecioGreaterThan(500).forEach(System.out::println);
+
+            System.out.println("\n🔍 Productos que contienen 'lap':");
+            repo.findByNombreContainingIgnoreCase("lap").forEach(System.out::println);
+
+            System.out.println("\n🎯 Productos con precio entre 400 y 1000:");
+            repo.findByPrecioBetween(400, 1000).forEach(System.out::println);
+
+            System.out.println("\n📘 Productos cuyo nombre empieza con 'm':");
+            repo.findByNombreStartingWithIgnoreCase("m").forEach(System.out::println);
+        };
+    }
+}
